@@ -1,13 +1,22 @@
-
 local script = GetCurrentResourceName()
 
 local function checkVersion(err, responseText, headers)
     local curVersion = LoadResourceFile(script, "version")
+    if curVersion == nil then
+        print("[^1"..script.."^7] Version file not found!")
+        return
+    end
+    
     local version = string.gsub(curVersion, "%s+", "")
     if responseText == nil then
         print("[^1"..script.."^7] Check for script update ^1FAILED^7")
         return
     end
+
+    responseText = string.gsub(responseText, "%s+", "")
+    
+    print("curVersion: " .. tostring(version))
+
     if version ~= responseText and tonumber(version) < tonumber(responseText) then
         print("^1----------------------------------------------------------------------------------^7")
         print("[^3"..script.."^7] is outdated, latest version is: ^2"..responseText.."^7, installed version: ^1"..version.."^7!\nupdate from https://github.com/Evan-Developing/Evan_Cartridges/tree/main")
@@ -21,6 +30,6 @@ local function checkVersion(err, responseText, headers)
     end
 end
 
-Citizen.CreateThread( function()
+Citizen.CreateThread(function()
     PerformHttpRequest("https://raw.githubusercontent.com/Evan-Developing/Evan_Cartridges/main/version", checkVersion, "GET")
 end)
